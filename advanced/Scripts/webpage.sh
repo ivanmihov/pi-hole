@@ -81,18 +81,24 @@ SetWebPassword(){
 		exit 1
 	fi
 
-	read -s -p "Enter New Password (Blank for no password): " PASSWORD
-	echo ""
+        if (( ${#args[2]} > 0 )) ; then
+                PASSWORD="${args[2]}"
+                CONFIRM="${PASSWORD}"
+        else
+                read -s -p "Enter New Password (Blank for no password): " PASSWORD
+                echo ""
 
-	if [ "${PASSWORD}" == "" ]; then
-		change_setting "WEBPASSWORD" ""
-		echo "Password Removed"
-		exit 0
-	fi
+                if [ "${PASSWORD}" == "" ]; then
+                        change_setting "WEBPASSWORD" ""
+                        echo "Password Removed"
+                        exit 0
+                fi
 
-	read -s -p "Confirm Password: " CONFIRM
-	echo ""
-	if [ "${PASSWORD}" == "${CONFIRM}" ] ; then
+                read -s -p "Confirm Password: " CONFIRM
+                echo ""
+        fi
+
+        if [ "${PASSWORD}" == "${CONFIRM}" ] ; then
 		# Compute password hash twice to avoid rainbow table vulnerability
 		hash=$(echo -n ${PASSWORD} | sha256sum | sed 's/\s.*$//')
 		hash=$(echo -n ${hash} | sha256sum | sed 's/\s.*$//')
